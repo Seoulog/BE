@@ -69,6 +69,13 @@ public class NaverApiClient implements OauthApiClient {
     }
 
     @Override
+    public TokenDto getLoginOauthAccessToken(OauthLoginRequest oauthLoginRequest) {
+        return getOauthAccessToken(oauthLoginRequest);
+    }
+
+
+
+    @Override
     public User.Type getUserType() {
         return User.Type.NAVER;
     }

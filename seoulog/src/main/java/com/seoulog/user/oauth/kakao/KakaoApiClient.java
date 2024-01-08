@@ -25,7 +25,8 @@ public class KakaoApiClient implements OauthApiClient {
 
     @Value("${spring.security.oauth2.client.provider.kakao.user-info-uri}")
     private String apiUrl;
-
+    @Value("${spring.security.oauth2.client.registration.kakao.redirect-uri}")
+    private String redirectUrl;
     private final RestTemplate restTemplate;
     public KakaoApiClient(RestTemplateBuilder builder) {
         this.restTemplate = builder.build();
@@ -38,6 +39,20 @@ public class KakaoApiClient implements OauthApiClient {
         HttpHeaders httpHeaders = newHttpHeaders();
 
         MultiValueMap<String, String> body = oauthLoginRequest.makeBody();
+        body.add("redirect_uri", "http://localhost:3000/register/" + redirectUrl);
+        HttpEntity<?> request = new HttpEntity<>(body, httpHeaders);
+
+        ResponseEntity<KakaoToken> response = restTemplate.postForEntity(authUrl, request, KakaoToken.class);
+
+        return new TokenDto(Objects.requireNonNull(response.getBody()).getAccessToken(), response.getBody().getRefreshToken());
+    }
+
+    @Override
+    public TokenDto getLoginOauthAccessToken(OauthLoginRequest oauthLoginRequest) {
+        HttpHeaders httpHeaders = newHttpHeaders();
+
+        MultiValueMap<String, String> body = oauthLoginRequest.makeBody();
+        body.add("redirect_uri", "http://localhost:3000/login/" + redirectUrl);
         HttpEntity<?> request = new HttpEntity<>(body, httpHeaders);
 
         ResponseEntity<KakaoToken> response = restTemplate.postForEntity(authUrl, request, KakaoToken.class);

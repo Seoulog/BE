@@ -33,4 +33,18 @@ public class NaverOauthService {
                 .build();
     }
 
+    public OauthInfo getNaverLoginInfo(NaverLoginRequest naverLoginRequest) {
+        TokenDto naverToken = naverApiClient.getLoginOauthAccessToken(naverLoginRequest);
+        OauthProfileResponse oauthProfile = naverApiClient.getOauthProfile(naverToken.getAccessToken());
+
+
+        return OauthInfo.builder()
+                .refreshToken(naverToken.getRefreshToken())
+                .email(oauthProfile.getEmail())
+                .type(naverLoginRequest.userType())
+                .nickname(oauthProfile.getNickName())
+                .id(oauthProfile.getId())
+                .build();
+    }
+
 }
